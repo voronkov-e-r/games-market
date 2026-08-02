@@ -1,17 +1,17 @@
 {% extends 'main_template.html' %}
 
-{% block title %}Магазин{% endblock %}
+{% block title %}Библиотека{% endblock %}
 
 {% block content %}
-<div class="store-wrapper">
-  <div class="store-header">
+<div class="library-wrapper">
+  <div class="library-header">
     <div class="user-bar">
       <div class="user-info">
         <span class="user-icon">👤</span>
         <span class="username">{{ user.name }}</span>
       </div>
       <div class="user-actions">
-        <a href="/market/library" class="library-btn">📚 Библиотека</a>
+        <a href="/market" class="shop-btn">🛒 Магазин</a>
         <div class="user-balance">
           <span class="balance-icon">💰</span>
           <span class="balance-amount">{{ user.balance }} ₽</span>
@@ -19,33 +19,36 @@
         </div>
       </div>
     </div>
-    <h1>Магазин игр</h1>
-    <p>Выберите свою следующую игру</p>
+    <h1>Моя библиотека</h1>
+    <p>Все ваши игры в одном месте</p>
   </div>
 
-  <div class="games-grid">
-    {% for game in games %}
-    <div class="game-card">
-      <div class="game-image">
+  <div class="library-grid">
+    {% for game in library_games %}
+    <div class="library-card">
+      <div class="library-image">
         <span>🎮</span>
       </div>
-      <div class="game-info">
+      <div class="library-info">
         <h3>{{ game.name }}</h3>
-        <div class="game-price">{{ game.price }} ₽</div>
-        <button class="buy-btn">Купить</button>
+        <div class="game-status">
+          <span class="status-badge">✅ В библиотеке</span>
+        </div>
+        <button class="play-btn">Играть</button>
       </div>
     </div>
     {% empty %}
     <div class="empty-state">
-      <span>🎯</span>
-      <p>Игры временно отсутствуют</p>
+      <span>📚</span>
+      <p>Ваша библиотека пуста</p>
+      <a href="/market" class="empty-link">Перейти в магазин</a>
     </div>
     {% endfor %}
   </div>
 </div>
 
 <style>
-  .store-wrapper {
+  .library-wrapper {
     position: relative;
     z-index: 2;
     width: 100%;
@@ -56,7 +59,7 @@
     overflow-y: auto;
   }
 
-  .store-header {
+  .library-header {
     text-align: center;
     margin-bottom: 3rem;
   }
@@ -98,7 +101,7 @@
     gap: 1rem;
   }
 
-  .library-btn {
+  .shop-btn {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -115,14 +118,14 @@
     cursor: pointer;
   }
 
-  .library-btn:hover {
+  .shop-btn:hover {
     background: rgba(108, 92, 231, 0.2);
     border-color: rgba(108, 92, 231, 0.3);
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(108, 92, 231, 0.15);
   }
 
-  .library-btn:active {
+  .shop-btn:active {
     transform: translateY(0);
   }
 
@@ -135,7 +138,6 @@
     padding: 0.4rem 1.2rem;
     border-radius: 2rem;
     border: 1px solid rgba(108, 92, 231, 0.2);
-    position: relative;
   }
 
   .balance-icon {
@@ -148,35 +150,7 @@
     color: #a29bfe;
   }
 
-  .balance-add {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    margin-left: 0.2rem;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
-    color: #a29bfe;
-    text-decoration: none;
-    font-size: 1.2rem;
-    font-weight: 300;
-    line-height: 1;
-    border: 1px solid rgba(108, 92, 231, 0.2);
-  }
-
-  .balance-add:hover {
-    background: rgba(108, 92, 231, 0.3);
-    transform: scale(1.1);
-    box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
-    border-color: rgba(108, 92, 231, 0.4);
-  }
-
-  .balance-add:active {
-    transform: scale(0.95);
-  }
-
-  .store-header h1 {
+  .library-header h1 {
     color: rgba(255, 255, 255, 0.95);
     font-size: 2.8rem;
     font-weight: 600;
@@ -184,13 +158,13 @@
     margin-bottom: 0.3rem;
   }
 
-  .store-header p {
+  .library-header p {
     color: rgba(255, 255, 255, 0.5);
     font-size: 1.1rem;
     font-weight: 300;
   }
 
-  .games-grid {
+  .library-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 2rem;
@@ -198,7 +172,7 @@
     padding-bottom: 2rem;
   }
 
-  .game-card {
+  .library-card {
     background: rgba(255, 255, 255, 0.06);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
@@ -211,13 +185,13 @@
     max-width: 320px;
   }
 
-  .game-card:hover {
+  .library-card:hover {
     transform: translateY(-6px);
     border-color: rgba(255, 255, 255, 0.15);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
   }
 
-  .game-image {
+  .library-image {
     height: 180px;
     display: flex;
     align-items: center;
@@ -227,11 +201,11 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   }
 
-  .game-info {
+  .library-info {
     padding: 1.5rem;
   }
 
-  .game-info h3 {
+  .library-info h3 {
     color: rgba(255, 255, 255, 0.95);
     font-size: 1.2rem;
     font-weight: 600;
@@ -240,18 +214,26 @@
     text-align: center;
   }
 
-  .game-price {
-    color: #a29bfe;
-    font-size: 1.3rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
+  .game-status {
     text-align: center;
+    margin-bottom: 1rem;
   }
 
-  .buy-btn {
+  .status-badge {
+    display: inline-block;
+    padding: 0.3rem 1rem;
+    background: rgba(46, 213, 115, 0.2);
+    border: 1px solid rgba(46, 213, 115, 0.3);
+    border-radius: 2rem;
+    color: #2ed573;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .play-btn {
     width: 100%;
     padding: 0.7rem;
-    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    background: linear-gradient(135deg, #2ed573, #7bed9f);
     border: none;
     border-radius: 1.2rem;
     color: white;
@@ -263,13 +245,13 @@
     letter-spacing: 0.02em;
   }
 
-  .buy-btn:hover {
+  .play-btn:hover {
     transform: scale(1.02);
-    box-shadow: 0 8px 25px rgba(108, 92, 231, 0.3);
-    background: linear-gradient(135deg, #7c6df0, #b0a9ff);
+    box-shadow: 0 8px 25px rgba(46, 213, 115, 0.3);
+    background: linear-gradient(135deg, #3ddc84, #8cf0a8);
   }
 
-  .buy-btn:active {
+  .play-btn:active {
     transform: scale(0.98);
   }
 
@@ -293,10 +275,29 @@
   .empty-state p {
     color: rgba(255, 255, 255, 0.4);
     font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .empty-link {
+    display: inline-block;
+    padding: 0.7rem 2rem;
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    border-radius: 2rem;
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    font-family: inherit;
+  }
+
+  .empty-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(108, 92, 231, 0.3);
+    background: linear-gradient(135deg, #7c6df0, #b0a9ff);
   }
 
   @media (max-width: 640px) {
-    .store-wrapper {
+    .library-wrapper {
       padding: 1.5rem 1rem;
     }
 
@@ -317,7 +318,7 @@
       width: 100%;
     }
 
-    .library-btn {
+    .shop-btn {
       justify-content: center;
       width: 100%;
     }
@@ -327,42 +328,66 @@
       width: 100%;
     }
 
-    .store-header h1 {
+    .library-header h1 {
       font-size: 2.2rem;
     }
 
-    .games-grid {
+    .library-grid {
       grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       gap: 1.5rem;
     }
 
-    .game-image {
+    .library-image {
       height: 140px;
       font-size: 3rem;
     }
 
-    .game-info {
+    .library-info {
       padding: 1.2rem;
     }
 
-    .game-info h3 {
-      font-size: 1.1rem;
-    }
-
-    .game-price {
+    .library-info h3 {
       font-size: 1.1rem;
     }
   }
 
   @media (max-width: 400px) {
-    .games-grid {
+    .library-grid {
       grid-template-columns: 1fr;
       justify-items: center;
     }
 
-    .game-card {
+    .library-card {
       max-width: 100%;
     }
+  }
+  .balance-add {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    margin-left: 0.2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    color: #a29bfe;
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: 300;
+    transition: all 0.3s ease;
+    line-height: 1;
+    border: 1px solid rgba(108, 92, 231, 0.2);
+  }
+
+  .balance-add:hover {
+    background: rgba(108, 92, 231, 0.3);
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+    border-color: rgba(108, 92, 231, 0.4);
+  }
+
+  .balance-add:active {
+    transform: scale(0.95);
   }
 </style>
 {% endblock %}

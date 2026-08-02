@@ -1,0 +1,503 @@
+{% extends 'main_template.html' %}
+
+{% block title %}Пополнить баланс{% endblock %}
+
+{% block content %}
+<div class="topup-wrapper">
+  <div class="topup-header">
+    <div class="user-bar">
+      <div class="user-info">
+        <span class="user-icon">👤</span>
+        <span class="username">{{ user.name }}</span>
+      </div>
+      <div class="user-actions">
+        <a href="/market/library" class="library-btn">📚 Библиотека</a>
+        <div class="user-balance">
+          <span class="balance-icon">💰</span>
+          <span class="balance-amount">{{ user.balance }} ₽</span>
+          <a href="/market/topup" class="balance-add">➕</a>
+        </div>
+      </div>
+    </div>
+    <h1>Пополнение баланса</h1>
+    <p>Выберите сумму для пополнения</p>
+  </div>
+
+  <div class="topup-container">
+    <div class="current-balance">
+      <span class="current-label">Текущий баланс</span>
+      <span class="current-amount">{{ user.balance }} ₽</span>
+    </div>
+
+    <div class="topup-options">
+      <div class="topup-card" data-amount="100">
+        <span class="topup-amount">100 ₽</span>
+        <span class="topup-bonus">+0 бонусов</span>
+      </div>
+      <div class="topup-card" data-amount="500">
+        <span class="topup-amount">500 ₽</span>
+        <span class="topup-bonus">+25 бонусов</span>
+      </div>
+      <div class="topup-card" data-amount="1000">
+        <span class="topup-amount">1 000 ₽</span>
+        <span class="topup-bonus">+75 бонусов</span>
+      </div>
+      <div class="topup-card" data-amount="2500">
+        <span class="topup-amount">2 500 ₽</span>
+        <span class="topup-bonus">+250 бонусов</span>
+      </div>
+      <div class="topup-card" data-amount="5000">
+        <span class="topup-amount">5 000 ₽</span>
+        <span class="topup-bonus">+600 бонусов</span>
+      </div>
+      <div class="topup-card custom">
+        <span class="topup-amount">Своя сумма</span>
+        <input type="number" class="custom-amount" placeholder="Введите сумму" min="1">
+      </div>
+    </div>
+
+    <div class="topup-action">
+      <button class="topup-btn">Пополнить</button>
+    </div>
+
+    <div class="topup-info">
+      <div class="info-item">
+        <span class="info-icon">💳</span>
+        <span class="info-text">Безопасная оплата</span>
+      </div>
+      <div class="info-item">
+        <span class="info-icon">⚡</span>
+        <span class="info-text">Мгновенное зачисление</span>
+      </div>
+      <div class="info-item">
+        <span class="info-icon">🎁</span>
+        <span class="info-text">Бонусы за пополнение</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .topup-wrapper {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1200px;
+    padding: 2rem 1.5rem;
+    margin: 0 auto;
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+
+  .topup-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .user-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 1.5rem;
+    padding: 0.8rem 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .user-icon {
+    font-size: 1.5rem;
+  }
+
+  .username {
+    font-size: 1.1rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+
+  .user-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .library-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.2rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 2rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  .library-btn:hover {
+    background: rgba(108, 92, 231, 0.2);
+    border-color: rgba(108, 92, 231, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(108, 92, 231, 0.15);
+  }
+
+  .library-btn:active {
+    transform: translateY(0);
+  }
+
+  .user-balance {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(108, 92, 231, 0.2);
+    padding: 0.4rem 1.2rem;
+    border-radius: 2rem;
+    border: 1px solid rgba(108, 92, 231, 0.2);
+  }
+
+  .balance-icon {
+    font-size: 1.2rem;
+  }
+
+  .balance-amount {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #a29bfe;
+  }
+
+  .balance-add {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    margin-left: 0.2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    color: #a29bfe;
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: 300;
+    transition: all 0.3s ease;
+    line-height: 1;
+    border: 1px solid rgba(108, 92, 231, 0.2);
+  }
+
+  .balance-add:hover {
+    background: rgba(108, 92, 231, 0.3);
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+    border-color: rgba(108, 92, 231, 0.4);
+  }
+
+  .balance-add:active {
+    transform: scale(0.95);
+  }
+
+  .topup-header h1 {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 2.8rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.3rem;
+  }
+
+  .topup-header p {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1.1rem;
+    font-weight: 300;
+  }
+
+  .topup-container {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .current-balance {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 1.5rem;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .current-label {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.1rem;
+    font-weight: 300;
+  }
+
+  .current-amount {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #a29bfe;
+  }
+
+  .topup-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .topup-card {
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 1.5rem;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    border: 2px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .topup-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(108, 92, 231, 0.3);
+    box-shadow: 0 10px 30px rgba(108, 92, 231, 0.1);
+  }
+
+  .topup-card.selected {
+    border-color: #6c5ce7;
+    background: rgba(108, 92, 231, 0.15);
+    box-shadow: 0 0 30px rgba(108, 92, 231, 0.1);
+  }
+
+  .topup-amount {
+    display: block;
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+
+  .topup-bonus {
+    display: block;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.85rem;
+  }
+
+  .topup-card.custom {
+    grid-column: span 1;
+  }
+
+  .topup-card.custom .custom-amount {
+    width: 100%;
+    padding: 0.4rem 0.6rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.8rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+    font-family: inherit;
+    text-align: center;
+    outline: none;
+    transition: all 0.3s ease;
+    margin-top: 0.3rem;
+  }
+
+  .topup-card.custom .custom-amount:focus {
+    border-color: rgba(108, 92, 231, 0.4);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .topup-card.custom .custom-amount::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  .topup-action {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .topup-btn {
+    padding: 1rem 4rem;
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    border: none;
+    border-radius: 3rem;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    letter-spacing: 0.02em;
+  }
+
+  .topup-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(108, 92, 231, 0.3);
+    background: linear-gradient(135deg, #7c6df0, #b0a9ff);
+  }
+
+  .topup-btn:active {
+    transform: translateY(0);
+  }
+
+  .topup-info {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+
+  .info-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.8rem;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 1.2rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .info-icon {
+    font-size: 1.2rem;
+  }
+
+  .info-text {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 768px) {
+    .topup-options {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .topup-card.custom {
+      grid-column: span 2;
+    }
+
+    .topup-info {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .topup-wrapper {
+      padding: 1.5rem 1rem;
+    }
+
+    .user-bar {
+      flex-direction: column;
+      gap: 0.8rem;
+      align-items: stretch;
+      padding: 0.8rem 1.2rem;
+    }
+
+    .user-info {
+      justify-content: center;
+    }
+
+    .user-actions {
+      flex-direction: column;
+      gap: 0.8rem;
+      width: 100%;
+    }
+
+    .library-btn {
+      justify-content: center;
+      width: 100%;
+    }
+
+    .user-balance {
+      justify-content: center;
+      width: 100%;
+    }
+
+    .topup-header h1 {
+      font-size: 2.2rem;
+    }
+
+    .current-balance {
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: 1.2rem;
+    }
+
+    .current-amount {
+      font-size: 1.5rem;
+    }
+
+    .topup-options {
+      grid-template-columns: 1fr;
+      gap: 0.8rem;
+    }
+
+    .topup-card.custom {
+      grid-column: span 1;
+    }
+
+    .topup-btn {
+      padding: 0.8rem 2.5rem;
+      font-size: 1rem;
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('.topup-card:not(.custom)');
+    const customInput = document.querySelector('.custom-amount');
+    const topupBtn = document.querySelector('.topup-btn');
+    let selectedAmount = null;
+
+    cards.forEach(card => {
+      card.addEventListener('click', function() {
+        cards.forEach(c => c.classList.remove('selected'));
+        this.classList.add('selected');
+        selectedAmount = this.dataset.amount;
+        if (customInput) {
+          customInput.value = '';
+        }
+      });
+    });
+
+    if (customInput) {
+      customInput.addEventListener('focus', function() {
+        cards.forEach(c => c.classList.remove('selected'));
+        selectedAmount = null;
+      });
+
+      customInput.addEventListener('input', function() {
+        if (this.value) {
+          cards.forEach(c => c.classList.remove('selected'));
+          selectedAmount = this.value;
+        }
+      });
+    }
+
+    topupBtn.addEventListener('click', function() {
+      if (selectedAmount) {
+        alert(`Пополнение на сумму ${selectedAmount} ₽`);
+      } else {
+        alert('Пожалуйста, выберите сумму для пополнения');
+      }
+    });
+  });
+</script>
+{% endblock %}
