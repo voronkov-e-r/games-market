@@ -1,10 +1,9 @@
 from typing import Annotated
 
-from django.db.models.expressions import result
 from fastapi import APIRouter, Depends
 
-from repository import UsersRepository, GamesRepository
-from schemas import SUserAdd, SCheckUser, SGameAdd
+from repository import UsersRepository, GamesRepository, PaymentRepository
+from schemas import SUserAdd, SCheckUser, SGameAdd, SPaymentAdd
 
 
 user_router = APIRouter(prefix='/user', tags=['Users'])
@@ -40,4 +39,14 @@ async def add_game(game: Annotated[SGameAdd, Depends()]):
 @game_router.get('/getGames')
 async def get_games():
     result = await GamesRepository.get_all()
+    return {'ok':True, 'result':result}
+
+@payment_router.post('/buyGame')
+async def buy_one_game(pay: Annotated[SPaymentAdd, Depends()]):
+    result = await PaymentRepository.buy_one_game(pay)
+    return {'ok':True, 'result':result}
+
+@payment_router.post('/pupBalance')
+async def pup_balance(pay: Annotated[SPaymentAdd, Depends()]):
+    result = await PaymentRepository.topup_balance(pay)
     return {'ok':True, 'result':result}

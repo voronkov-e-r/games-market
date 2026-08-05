@@ -19,7 +19,7 @@ class UsersORM(Model):
     name: Mapped[str]
     mail: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str]
-    balance: Mapped[float] = 0.0
+    balance: Mapped[float] = mapped_column(nullable=False, default=0.0)
 
 
 class GamesORM(Model):
@@ -28,6 +28,17 @@ class GamesORM(Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(unique=True)
     price: Mapped[float]
+
+
+class PaymentORM(Model):
+    __tablename__ = 'payment'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int]
+    value: Mapped[float]
+    payment_id: Mapped[str]
+    idempotence_key: Mapped[str]
+    status: Mapped[str] = mapped_column(default='processing')
 
 
 

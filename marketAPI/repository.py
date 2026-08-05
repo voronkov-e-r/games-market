@@ -3,8 +3,8 @@ from fastapi import HTTPException
 from pydantic import EmailStr
 from sqlalchemy.exc import IntegrityError
 
-from database import UsersORM, GamesORM
-from schemas import SUserAdd, SCheckUser, SGameAdd, SGame
+from database import UsersORM, GamesORM, PaymentORM
+from schemas import SUserAdd, SCheckUser, SGameAdd, SGame, SPaymentAdd
 from database import new_session
 from sqlalchemy import select
 
@@ -94,3 +94,77 @@ class GamesRepository:
             games = [SGame.model_validate(game) for game in game_models]
 
             return games
+
+
+class PaymentRepository:
+    @classmethod
+    async def buy_one_game(cls, data:SPaymentAdd) -> int:
+        async with new_session() as session:
+            if data.value <= 0:
+                raise HTTPException(400, detail='Некорректная сумма платежа')
+
+            query = select(PaymentORM).where(PaymentORM.payment_id == data.payment_id, PaymentORM.user_id == data.user_id, PaymentORM.value == data.value, PaymentORM.idempotence_key == data.idempotence_key)
+
+            res = await session.execute(query)
+            pay_model = res.scalar_one_or_none()
+
+            if pay_model:
+                raise HTTPException(208, detail='Платеж уже обрабатывается')
+
+            query = select(UsersORM).where(UsersORM.id == data.user_id)
+            res = await session.execute(query)
+            res_model = res.scalar_one_or_none()
+
+            if not res_model:
+                raise HTTPException(404, detail='Пользователь не найден')
+
+            if res_model.balance < data.value:
+                raise HTTPException(400, detail='Недостаточно средств')
+
+            res_model.balance -= data.value
+
+            data_dict = data.model_dump()
+            data_dict['status'] = 'completed'
+            pay = PaymentORM(**data_dict)
+            session.add(pay)
+
+            await session.flush()
+            await session.commit()
+
+            return pay.id
+
+
+    @classmethod
+    async def topup_balance(cls, data:SPaymentAdd) -> int:
+        async with new_session() as session:
+            if data.value <= 0:
+                raise HTTPException(400, detail='Некорректная сумма платежа')
+
+            query = select(PaymentORM).where(PaymentORM.payment_id == data.payment_id,
+                                             PaymentORM.user_id == data.user_id, PaymentORM.value == data.value,
+                                             PaymentORM.idempotence_key == data.idempotence_key, PaymentORM.status == 'processing')
+
+            res = await session.execute(query)
+            pay_model = res.scalar_one_or_none()
+
+            if pay_model:
+                raise HTTPException(208, detail='Платеж уже обрабатывается')
+
+            query = select(UsersORM).where(UsersORM.id == data.user_id)
+            res = await session.execute(query)
+            res_model = res.scalar_one_or_none()
+
+            if not res_model:
+                raise HTTPException(404, detail='Пользователь не найден')
+
+            res_model.balance += data.value
+
+            data_dict = data.model_dump()
+            data_dict['status'] = 'completed'
+            pay = PaymentORM(**data_dict)
+            session.add(pay)
+
+            await session.flush()
+            await session.commit()
+
+            return pay.id
