@@ -2,6 +2,8 @@ from contextlib import asynccontextmanager
 from database import create_tables, delete_tables
 from fastapi import FastAPI
 from routers import user_router, game_router, payment_router
+from kafka_manager import consuming
+import asyncio
 
 @asynccontextmanager
 async def lifespan(app:FastAPI):
@@ -9,6 +11,9 @@ async def lifespan(app:FastAPI):
     print('DB is cleaned')
     await create_tables()
     print('DB is redy')
+
+    asyncio.create_task(consuming())
+
     yield
     print('Turning off...')
 

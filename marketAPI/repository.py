@@ -1,4 +1,3 @@
-from django.db.models.expressions import result
 from fastapi import HTTPException
 from pydantic import EmailStr
 from sqlalchemy.exc import IntegrityError
