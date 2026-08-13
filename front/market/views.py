@@ -1,19 +1,43 @@
 from django.shortcuts import render
+from django.http import HttpResponseRedirect
+from . import kafka_manager
 
 def index(request):
-    return render(request, 'main_market.html', {'games':[Game('Team workers 2', 800) for i in range(10)], 'user':User('Анатолий',1286.31)})
+    if not request.COOKIES.get('is_reged'):
+        return HttpResponseRedirect('/')
+
+    user = User(request.COOKIES.get('name'), request.COOKIES.get('balance'))
+    games_serial = kafka_manager.kafka_feedback('getgames', {})
+    games = [Game(**data) for data in games_serial.get('result', 1234)]
+
+    return render(request, 'main_market.html', {'games':games, 'user':user})
+
 
 def library(request):
-    return render(request, 'library.html', {'user':User('Анатолий', 1286.31), 'library_games':[Game('Team workers 2', 800) for i in range(5)]})
+    if not request.COOKIES.get('is_reged'):
+        return HttpResponseRedirect('/')
+
+    user = User(request.COOKIES.get('name'), request.COOKIES.get('balance'))
+
+    return render(request, 'library.html', {'user':user, 'library_games':[]})
+
 
 def topup(request):
-    return render(request, 'topup.html', {'user':User('Анатолий', 1286.31)})
+    if not request.COOKIES.get('is_reged'):
+        return HttpResponseRedirect('/')
 
-# Пока что имитация получения каких-то данных
+    user = User(request.COOKIES.get('name'), request.COOKIES.get('balance'))
+
+    return render(request, 'topup.html', {'user':user})
+
+
+
+
 class Game:
-    def __init__(self, name:str, price:int):
+    def __init__(self, name:str, price:int, id:int):
         self.name = name
         self.price = price
+        self.id = id
 
 class User:
     def __init__(self, name:str, balance:float):

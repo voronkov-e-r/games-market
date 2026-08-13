@@ -4,6 +4,11 @@
 
 {% block content %}
 <div class="register-wrapper">
+  {% if detail %}
+    <div class="error-card">
+        <p>⚠️ {{ detail }}</p>
+    </div>
+  {% endif %}
   <div class="register-card">
     <div class="register-header">
       <h2>Создать аккаунт</h2>
@@ -11,6 +16,7 @@
     </div>
 
     <form class="register-form" action="" method="POST">
+      {% csrf_token %}
       <div class="form-group">
         <label for="username">Имя пользователя</label>
         <input type="text" id="username" name="username" placeholder="Введите имя" required>
@@ -48,6 +54,23 @@
 </div>
 
 <style>
+  .error-card {
+        position: absolute;
+        left: 50% - 100px;
+        top: 4%;
+        z-index: 1;
+        background: rgba(255, 0, 0, 0.1);
+        border: 1px solid rgba(255, 0, 0, 0.2);
+        border-radius: 0.8rem;
+        padding: 0.8rem 1.2rem;
+        margin-bottom: 1.5rem;
+        color: #ff6b6b;
+        font-size: 0.95rem;
+        text-align: center;
+    }
+    .error-card p {
+        margin: 0;
+    }
   .register-wrapper {
     display: flex;
     align-items: center;

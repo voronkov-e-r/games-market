@@ -16,6 +16,7 @@ topics_dict = {
     'getgames': routers.get_games,
     'buygame': routers.buy_one_game,
     'pupbalance': routers.pup_balance,
+    'adduser': routers.add_user
 }
 
 schemas_dict = {
@@ -24,9 +25,10 @@ schemas_dict = {
     'getgames': None,
     'buygame': schemas.SPaymentAdd,
     'pupbalance': schemas.SPaymentAdd,
+    'adduser': schemas.SUserAdd
 }
 
-topics = ['checkreg', 'getuser', 'buygame', 'getgames', 'pupbalance']
+topics = ['checkreg','adduser', 'getuser', 'buygame', 'getgames', 'pupbalance']
 
 async def consuming():
     producer = AIOKafkaProducer(
@@ -58,11 +60,11 @@ async def consuming():
 
 
                 result = serializable(result)
-                #print(result)
+                print(result) # отладка
 
                 await producer.send(temp_topic + '_res', value=result)
             except HTTPException as e:
-                #print(e)
+                print(e) # отладка
                 await producer.send(temp_topic + '_res', value={'ok':False, 'detail':e.detail})
     finally:
         await consumer.stop()
