@@ -60,11 +60,9 @@ async def consuming():
 
 
                 result = serializable(result)
-                print(result) # отладка
 
                 await producer.send(temp_topic + '_res', value=result)
             except HTTPException as e:
-                print(e) # отладка
                 await producer.send(temp_topic + '_res', value={'ok':False, 'detail':e.detail})
     finally:
         await consumer.stop()

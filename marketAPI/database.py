@@ -20,6 +20,7 @@ class UsersORM(Model):
     mail: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str]
     balance: Mapped[float] = mapped_column(nullable=False, default=0.0)
+    library: Mapped[str] = mapped_column(default='[]')
 
 
 class GamesORM(Model):

@@ -24,6 +24,7 @@ def index(request):
             response.set_cookie('name', user_data['name'], max_age)
             response.set_cookie('balance', user_data['balance'], max_age)
             response.set_cookie('id', user_data['id'], max_age)
+            response.set_cookie('library', user_data['library'], max_age)
 
             return response
 

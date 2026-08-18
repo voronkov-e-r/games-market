@@ -8,6 +8,21 @@ from database import new_session
 from sqlalchemy import select
 
 
+
+def str_to_list(list_str:str) -> list:
+    list_str = list_str.replace('[', '')
+    list_str = list_str.replace(']', '')
+
+    if list_str == '':
+        return []
+
+    new_list = list_str.split(',')
+    new_list = [int(i) for i in new_list]
+
+    return new_list
+
+
+
 class UsersRepository:
     @classmethod
     async def create_one(cls, data:SUserAdd) -> int:
@@ -65,7 +80,9 @@ class UsersRepository:
             if not user:
                 raise HTTPException(404, detail='Пользователь не найден')
 
-            return {'name':user.name, 'balance':user.balance, 'id':user.id}
+            user_lib = str_to_list(user.library)
+
+            return {'name':user.name, 'balance':user.balance, 'id':user.id, 'library':user_lib}
 
 
 
@@ -120,7 +137,19 @@ class PaymentRepository:
             if res_model.balance < data.value:
                 raise HTTPException(400, detail='Недостаточно средств')
 
+            query = select(GamesORM).where(GamesORM.name == data.payment_id)
+            res = await session.execute(query)
+            res_game_model = res.scalar_one_or_none()
+
+            if not res_game_model:
+                raise HTTPException(404, detail='Игра не найдена')
+
+            str_lib = res_model.library
+            list_lib = str_to_list(str_lib)
+            list_lib.append(res_game_model.id)
+
             res_model.balance -= data.value
+            res_model.library = str(list_lib)
 
             data_dict = data.model_dump()
             data_dict['status'] = 'completed'

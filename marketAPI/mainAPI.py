@@ -7,8 +7,8 @@ import asyncio
 
 @asynccontextmanager
 async def lifespan(app:FastAPI):
-    #await delete_tables()
-    print('DB is cleaned')
+    #await delete_tables() # вернуть если нужно отчистить бд
+    #print('DB is cleaned')
     await create_tables()
     print('DB is redy')
 
