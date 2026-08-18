@@ -16,12 +16,14 @@ def index(request):
         result = kafka_manager.kafka_feedback('checkreg', {'mail':mail, 'password':password})
 
         if result['result']:
+            max_age = 600
             response = HttpResponseRedirect('/market')
-            response.set_cookie('is_reged', True, 60)
+            response.set_cookie('is_reged', True, max_age)
 
             user_data = kafka_manager.kafka_feedback('getuser', {'mail':mail, 'password':password})
-            response.set_cookie('name', user_data['name'], 60)
-            response.set_cookie('balance', user_data['balance'], 60)
+            response.set_cookie('name', user_data['name'], max_age)
+            response.set_cookie('balance', user_data['balance'], max_age)
+            response.set_cookie('id', user_data['id'], max_age)
 
             return response
 

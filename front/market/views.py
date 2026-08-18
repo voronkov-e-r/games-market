@@ -1,16 +1,38 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from . import kafka_manager
+import uuid
 
 def index(request):
     if not request.COOKIES.get('is_reged'):
         return HttpResponseRedirect('/')
 
+    context = {}
+
+    if request.method == 'POST':
+        game_name = request.POST.get('game_name')
+        game_price = float(request.POST.get('game_price').replace(',','.'))
+        user_id = request.COOKIES.get('id')
+        idemp_key = str(uuid.uuid4())
+
+        result = kafka_manager.kafka_feedback('buygame', {'user_id':user_id, 'value':game_price, 'payment_id':game_name, 'idempotence_key':idemp_key})
+
+        if not result.get('result'):
+            context['error'] = result['detail']
+        else:
+            response = HttpResponseRedirect('/market')
+            new_balance = float(request.COOKIES.get('balance')) - game_price
+            response.set_cookie('balance', new_balance)
+            return response
+
     user = User(request.COOKIES.get('name'), request.COOKIES.get('balance'))
     games_serial = kafka_manager.kafka_feedback('getgames', {})
     games = [Game(**data) for data in games_serial.get('result', 1234)]
 
-    return render(request, 'main_market.html', {'games':games, 'user':user})
+    context['games'] = games
+    context['user'] = user
+
+    return render(request, 'main_market.html', context)
 
 
 def library(request):
@@ -27,6 +49,22 @@ def topup(request):
         return HttpResponseRedirect('/')
 
     user = User(request.COOKIES.get('name'), request.COOKIES.get('balance'))
+
+    if request.method == 'POST':
+        payment_value = int(request.POST.get('amount'))
+        idemp_key = str(uuid.uuid4())
+
+        result = kafka_manager.kafka_feedback('pupbalance', {'user_id':request.COOKIES.get('id'), 'value':payment_value, 'payment_id':'pup', 'idempotence_key':idemp_key})
+
+        if not result.get('result'):
+            detail = result['detail']
+            return render(request, 'topup.html', {'user':user, 'error':detail})
+
+        response = HttpResponseRedirect('/market')
+        new_balance = float(request.COOKIES.get('balance')) + payment_value
+        response.set_cookie('balance', new_balance)
+        return response
+
 
     return render(request, 'topup.html', {'user':user})
 

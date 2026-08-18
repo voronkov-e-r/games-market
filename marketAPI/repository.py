@@ -65,7 +65,7 @@ class UsersRepository:
             if not user:
                 raise HTTPException(404, detail='Пользователь не найден')
 
-            return {'name':user.name, 'balance':user.balance}
+            return {'name':user.name, 'balance':user.balance, 'id':user.id}
 
 
 

@@ -24,16 +24,28 @@
   </div>
 
   <div class="games-grid">
+    {% if error %}
+    <div class="error-card">
+        <p>Ошибка: {{ error }}</p>
+    </div>
+  {% endif %}
     {% for game in games %}
     <div class="game-card">
-      <div class="game-image">
-        <span>🎮</span>
-      </div>
-      <div class="game-info">
-        <h3>{{ game.name }}</h3>
-        <div class="game-price">{{ game.price }} ₽</div>
-        <button class="buy-btn">Купить</button>
-      </div>
+      <form method="POST" action="" class="buy-form">
+        {% csrf_token %}
+        <input type="hidden" name="game_id" value="{{ game.id }}">
+        <input type="hidden" name="game_name" value="{{ game.name }}">
+        <input type="hidden" name="game_price" value="{{ game.price }}">
+
+        <div class="game-image">
+          <span>🎮</span>
+        </div>
+        <div class="game-info">
+          <h3>{{ game.name }}</h3>
+          <div class="game-price">{{ game.price }} ₽</div>
+          <button type="submit" class="buy-btn">Купить</button>
+        </div>
+      </form>
     </div>
     {% empty %}
     <div class="empty-state">
@@ -45,6 +57,23 @@
 </div>
 
 <style>
+  .error-card {
+        position: absolute;
+        left: 50% - 100px;
+        top: 4%;
+        z-index: 1;
+        background: rgba(255, 0, 0, 0.1);
+        border: 1px solid rgba(255, 0, 0, 0.2);
+        border-radius: 0.8rem;
+        padding: 0.8rem 1.2rem;
+        margin-bottom: 1.5rem;
+        color: #ff6b6b;
+        font-size: 0.95rem;
+        text-align: center;
+    }
+    .error-card p {
+        margin: 0;
+    }
   .store-wrapper {
     position: relative;
     z-index: 2;
@@ -217,6 +246,10 @@
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
   }
 
+  .buy-form {
+    display: contents;
+  }
+
   .game-image {
     height: 180px;
     display: flex;
@@ -365,4 +398,6 @@
     }
   }
 </style>
+
+
 {% endblock %}

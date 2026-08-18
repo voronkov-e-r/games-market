@@ -4,6 +4,11 @@
 
 {% block content %}
 <div class="topup-wrapper">
+  {% if error %}
+    <div class="error-card">
+        <p>Ошибка: {{ error }}</p>
+    </div>
+  {% endif %}
   <div class="topup-header">
     <div class="user-bar">
       <div class="user-info">
@@ -29,36 +34,41 @@
       <span class="current-amount">{{ user.balance }} ₽</span>
     </div>
 
-    <div class="topup-options">
-      <div class="topup-card" data-amount="100">
-        <span class="topup-amount">100 ₽</span>
-        <span class="topup-bonus">+0 бонусов</span>
-      </div>
-      <div class="topup-card" data-amount="500">
-        <span class="topup-amount">500 ₽</span>
-        <span class="topup-bonus">+25 бонусов</span>
-      </div>
-      <div class="topup-card" data-amount="1000">
-        <span class="topup-amount">1 000 ₽</span>
-        <span class="topup-bonus">+75 бонусов</span>
-      </div>
-      <div class="topup-card" data-amount="2500">
-        <span class="topup-amount">2 500 ₽</span>
-        <span class="topup-bonus">+250 бонусов</span>
-      </div>
-      <div class="topup-card" data-amount="5000">
-        <span class="topup-amount">5 000 ₽</span>
-        <span class="topup-bonus">+600 бонусов</span>
-      </div>
-      <div class="topup-card custom">
-        <span class="topup-amount">Своя сумма</span>
-        <input type="number" class="custom-amount" placeholder="Введите сумму" min="1">
-      </div>
-    </div>
+    <form id="topupForm" method="POST" action="">
+      {% csrf_token %}
+      <input type="hidden" name="amount" id="amountInput">
 
-    <div class="topup-action">
-      <button class="topup-btn">Пополнить</button>
-    </div>
+      <div class="topup-options">
+        <div class="topup-card" data-amount="100">
+          <span class="topup-amount">100 ₽</span>
+          <span class="topup-bonus">+0 бонусов</span>
+        </div>
+        <div class="topup-card" data-amount="500">
+          <span class="topup-amount">500 ₽</span>
+          <span class="topup-bonus">+25 бонусов</span>
+        </div>
+        <div class="topup-card" data-amount="1000">
+          <span class="topup-amount">1 000 ₽</span>
+          <span class="topup-bonus">+75 бонусов</span>
+        </div>
+        <div class="topup-card" data-amount="2500">
+          <span class="topup-amount">2 500 ₽</span>
+          <span class="topup-bonus">+250 бонусов</span>
+        </div>
+        <div class="topup-card" data-amount="5000">
+          <span class="topup-amount">5 000 ₽</span>
+          <span class="topup-bonus">+600 бонусов</span>
+        </div>
+        <div class="topup-card custom">
+          <span class="topup-amount">Своя сумма</span>
+          <input type="number" class="custom-amount" placeholder="Введите сумму" min="1">
+        </div>
+      </div>
+
+      <div class="topup-action">
+        <button type="submit" class="topup-btn">Пополнить</button>
+      </div>
+    </form>
 
     <div class="topup-info">
       <div class="info-item">
@@ -78,6 +88,23 @@
 </div>
 
 <style>
+  .error-card {
+        position: absolute;
+        left: 50% - 100px;
+        top: 4%;
+        z-index: 1;
+        background: rgba(255, 0, 0, 0.1);
+        border: 1px solid rgba(255, 0, 0, 0.2);
+        border-radius: 0.8rem;
+        padding: 0.8rem 1.2rem;
+        margin-bottom: 1.5rem;
+        color: #ff6b6b;
+        font-size: 0.95rem;
+        text-align: center;
+    }
+    .error-card p {
+        margin: 0;
+    }
   .topup-wrapper {
     position: relative;
     z-index: 2;
@@ -463,7 +490,8 @@
   document.addEventListener('DOMContentLoaded', function() {
     const cards = document.querySelectorAll('.topup-card:not(.custom)');
     const customInput = document.querySelector('.custom-amount');
-    const topupBtn = document.querySelector('.topup-btn');
+    const form = document.getElementById('topupForm');
+    const amountInput = document.getElementById('amountInput');
     let selectedAmount = null;
 
     cards.forEach(card => {
@@ -474,6 +502,9 @@
         if (customInput) {
           customInput.value = '';
         }
+        if (amountInput) {
+          amountInput.value = selectedAmount;
+        }
       });
     });
 
@@ -481,22 +512,36 @@
       customInput.addEventListener('focus', function() {
         cards.forEach(c => c.classList.remove('selected'));
         selectedAmount = null;
+        if (amountInput) {
+          amountInput.value = '';
+        }
       });
 
       customInput.addEventListener('input', function() {
         if (this.value) {
           cards.forEach(c => c.classList.remove('selected'));
           selectedAmount = this.value;
+          if (amountInput) {
+            amountInput.value = selectedAmount;
+          }
+        } else {
+          if (amountInput) {
+            amountInput.value = '';
+          }
         }
       });
     }
 
-    topupBtn.addEventListener('click', function() {
-      if (selectedAmount) {
-        alert(`Пополнение на сумму ${selectedAmount} ₽`);
-      } else {
+    form.addEventListener('submit', function(e) {
+      if (!selectedAmount || selectedAmount <= 0) {
+        e.preventDefault();
         alert('Пожалуйста, выберите сумму для пополнения');
+        return false;
       }
+      if (amountInput) {
+        amountInput.value = selectedAmount;
+      }
+      return true;
     });
   });
 </script>

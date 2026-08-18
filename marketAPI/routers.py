@@ -29,7 +29,7 @@ async def check_registration(user: Annotated[SCheckUser, Depends()]):
 @user_router.get('/getUserData')
 async def get_user_data(user: Annotated[SCheckUser, Depends()]):
     result = await UsersRepository.get_user_data(user)
-    return {'ok':True, 'name':result['name'], 'balance':result['balance']}
+    return {'ok':True, 'name':result['name'], 'balance':result['balance'], 'id':result['id']}
 
 @game_router.post('/addGame')
 async def add_game(game: Annotated[SGameAdd, Depends()]):
